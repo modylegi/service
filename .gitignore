@@ -1,0 +1,7 @@
+.DS_Store
+bin/
+.vscode/
+.idea/
+.env
+tmp/
+docker-compose.local.yml

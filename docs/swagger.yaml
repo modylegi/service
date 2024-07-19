@@ -1,0 +1,318 @@
+info:
+  contact: {}
+  description: Контент сервис - сервис хранения контента (баннеры, тесты, истории
+    и т.д.) для дальнейшего отображения его на клиенте пользователя.
+  title: Content Service API
+  version: "1.0"
+paths:
+  /block:
+    get:
+      description: Метод получение блока контента по id и/или названию.
+      parameters:
+      - description: id блока
+        in: query
+        name: block_id
+        type: integer
+      - description: название блока
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение блока контента по id и/или названию.
+      tags:
+      - Admin
+  /block/{block_id}:
+    get:
+      description: Метод получения элемента контента из блока по id, названию или
+        типу контента.
+      parameters:
+      - description: id блока
+        in: path
+        name: block_id
+        required: true
+        type: integer
+      - description: id контента
+        in: query
+        name: content_id
+        type: integer
+      - description: название элемента контента
+        in: query
+        name: name
+        type: string
+      - description: тип контента (1 - баннер, 2 - истории, 3 - тесты)
+        in: query
+        name: content_type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение элементов контента из блока по id, названию или типу контента.
+      tags:
+      - Admin
+  /block/{block_id}/list:
+    get:
+      description: Метод получения списка id и названий элементов контента для блока.
+      parameters:
+      - description: id блока
+        in: path
+        name: block_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение списка id и названий элементов контента для блока.
+      tags:
+      - Admin
+  /block/list:
+    get:
+      description: Метод получения списка id и названий всех блоков.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение списка id и названий всех блоков.
+      tags:
+      - Admin
+  /health:
+    get:
+      description: Health check.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Health check.
+      tags:
+      - Health
+  /scenario/{user_id}:
+    get:
+      description: Метод получение всего контента, который доступен пользователю по
+        его сценарию.
+      parameters:
+      - description: id пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение всего контента по сценарию пользователя.
+      tags:
+      - User
+  /scenario/block/{user_id}/{block_id}:
+    get:
+      description: Метод получения элемента контента из блока по id, названию или
+        типу контента.
+      parameters:
+      - description: id пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: id блока
+        in: path
+        name: block_id
+        required: true
+        type: integer
+      - description: id контента
+        in: query
+        name: content_id
+        type: integer
+      - description: название элемента контента
+        in: query
+        name: name
+        type: string
+      - description: тип контента (1 - баннер, 2 - истории, 3 - тесты)
+        in: query
+        name: content_type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение элемента контента из блока по id, названию или типу контента.
+      tags:
+      - User
+  /scenario/block/{user_id}/list/{block_id}:
+    get:
+      description: Метод получения списка id и названий элементов контента для блока.
+      parameters:
+      - description: id пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: id блока
+        in: path
+        name: block_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение списка id и названий элементов контента для блока.
+      tags:
+      - User
+  /scenario/blocks/{user_id}:
+    get:
+      description: Метод получение блока контента определенного типа по id и/или названию.
+      parameters:
+      - description: id пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: id блока
+        in: query
+        name: block_id
+        type: integer
+      - description: название блока
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение блока контента по id и/или названию для пользователя.
+      tags:
+      - User
+  /scenario/list/{user_id}:
+    get:
+      description: Метод получения списка id и названий блоков, доступных пользователю
+        по сценарию.
+      parameters:
+      - description: id пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение списка id и названий блоков, доступных пользователю по сценарию.
+      tags:
+      - User
+  /template:
+    get:
+      description: Метод получения шаблона по id, названию или типу контента.
+      parameters:
+      - description: id шаблона
+        in: query
+        name: template_id
+        type: integer
+      - description: название шаблона
+        in: query
+        name: name
+        type: string
+      - description: тип шаблона (1 - баннер, 2 - истории, 3 - тесты)
+        in: query
+        name: content_type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение шаблона по id, названию или типу.
+      tags:
+      - Admin
+  /template/list:
+    get:
+      description: Метод получения списка id, названий и типов всех шаблонов.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Получение списка id, названий и типов всех шаблонов.
+      tags:
+      - Admin
+swagger: "2.0"
