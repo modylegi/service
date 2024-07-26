@@ -23,3 +23,15 @@ type TemplateResp struct {
 	ContentType int             `json:"content_type"`
 	Content     json.RawMessage `json:"content,omitempty"`
 }
+
+type ApiOpts struct {
+	UserID                int
+	BlockID               int
+	BlockTitle            string
+	ContentID             int
+	ContentName           string
+	ContentTypeID         int
+	TemplateID            int
+	TemplateName          string
+	TemplateContentTypeID int
+}

@@ -23,8 +23,8 @@ db-reset:
 	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) GOOSE_MIGRATION_DIR=$(GOOSE_MIGRATION_DIR) goose reset
 
 swag:
-	@swag fmt
-	@swag init -g cmd/app/main.go -o docs 
+	@go run github.com/swaggo/swag/cmd/swag@latest fmt
+	@go run github.com/swaggo/swag/cmd/swag@latest init -g cmd/app/main.go -o docs
 
 dev:
 	@if command -v air > /dev/null; then \

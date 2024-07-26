@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/modylegi/service/internal/api"
 	"github.com/modylegi/service/internal/domain/repository"
 	"github.com/modylegi/service/internal/domain/service"
 	repositoryImpl "github.com/modylegi/service/internal/repository"
@@ -35,7 +34,7 @@ func NewUserService(db *sqlx.DB, rd *redis.Client) *UserService {
 	}
 }
 
-func (s *UserService) FindBlockList(ctx context.Context, opts api.Opts) ([]service.BlockResp, error) {
+func (s *UserService) FindBlockList(ctx context.Context, opts service.ApiOpts) ([]service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 	}
@@ -76,7 +75,7 @@ func (s *UserService) FindBlockList(ctx context.Context, opts api.Opts) ([]servi
 	return resp, nil
 }
 
-func (s *UserService) FindBlockListWithCache(ctx context.Context, opts api.Opts) ([]service.BlockResp, error) {
+func (s *UserService) FindBlockListWithCache(ctx context.Context, opts service.ApiOpts) ([]service.BlockResp, error) {
 	var resp []service.BlockResp
 	key := fmt.Sprintf("blockListUser:%d", opts.UserID)
 
@@ -105,7 +104,7 @@ func (s *UserService) FindBlockListWithCache(ctx context.Context, opts api.Opts)
 	return resp, nil
 }
 
-func (s *UserService) FindBlockIDAndTitleList(ctx context.Context, opts api.Opts) ([]service.BlockResp, error) {
+func (s *UserService) FindBlockIDAndTitleList(ctx context.Context, opts service.ApiOpts) ([]service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 	}
@@ -129,7 +128,7 @@ func (s *UserService) FindBlockIDAndTitleList(ctx context.Context, opts api.Opts
 
 }
 
-func (s *UserService) FindBlockByIDAndOrTitle(ctx context.Context, opts api.Opts) (*service.BlockResp, error) {
+func (s *UserService) FindBlockByIDAndOrTitle(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 		BlockID:        opts.BlockID,
@@ -162,7 +161,7 @@ func (s *UserService) FindBlockByIDAndOrTitle(ctx context.Context, opts api.Opts
 	return resp, nil
 }
 
-func (s *UserService) FindBlockBWithoutContentData(ctx context.Context, opts api.Opts) (*service.BlockResp, error) {
+func (s *UserService) FindBlockBWithoutContentData(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 		BlockID:        opts.BlockID,
@@ -194,7 +193,7 @@ func (s *UserService) FindBlockBWithoutContentData(ctx context.Context, opts api
 
 }
 
-func (s *UserService) FindBlockContentByIDAndOrTitleAndOrContentType(ctx context.Context, opts api.Opts) (*service.BlockResp, error) {
+func (s *UserService) FindBlockContentByIDAndOrTitleAndOrContentType(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 		BlockID:        opts.BlockID,

@@ -56,7 +56,7 @@ func (h *UserHandler) AllBlocksHandler(w http.ResponseWriter, r *http.Request) e
 		return err
 	}
 
-	opts := api.Opts{UserID: userIDInt}
+	opts := service.ApiOpts{UserID: userIDInt}
 
 	// Пользователь не привязан ни к какому сценарию
 	if err := h.validationSvc.LinkedScenarios(ctx, userIDInt); err != nil {
@@ -108,7 +108,7 @@ func (h *UserHandler) AllBlocksHandlerIDAndTitle(w http.ResponseWriter, r *http.
 		return err
 	}
 
-	opts := api.Opts{UserID: userIDInt}
+	opts := service.ApiOpts{UserID: userIDInt}
 
 	// Пользователь не привязан ни к какому сценарию
 	if err := h.validationSvc.LinkedScenarios(ctx, userIDInt); err != nil {
@@ -165,7 +165,7 @@ func (h *UserHandler) BlockByIDAndOrTitleParam(w http.ResponseWriter, r *http.Re
 		return err
 	}
 
-	opts := api.Opts{
+	opts := service.ApiOpts{
 		UserID: userIDInt,
 	}
 
@@ -259,7 +259,7 @@ func (h *UserHandler) BlockByID(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	opts := api.Opts{
+	opts := service.ApiOpts{
 		UserID: userIDInt,
 	}
 
@@ -367,7 +367,7 @@ func (h *UserHandler) Content(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	opts := api.Opts{
+	opts := service.ApiOpts{
 		UserID:  userIDInt,
 		BlockID: blockIDInt,
 	}

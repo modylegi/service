@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/modylegi/service/internal/api"
 	"github.com/modylegi/service/internal/domain/repository"
 	"github.com/modylegi/service/internal/domain/service"
 	repositoryImpl "github.com/modylegi/service/internal/repository"
@@ -47,7 +46,7 @@ func (s *AdminService) FindBlockIDAndTitleList(ctx context.Context) ([]service.B
 	return resp, nil
 }
 
-func (s *AdminService) FindBlockByIDAndOrTitle(ctx context.Context, opts api.Opts) (*service.BlockResp, error) {
+func (s *AdminService) FindBlockByIDAndOrTitle(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		BlockID:    opts.BlockID,
 		BlockTitle: opts.BlockTitle,
@@ -77,7 +76,7 @@ func (s *AdminService) FindBlockByIDAndOrTitle(ctx context.Context, opts api.Opt
 	return resp, nil
 }
 
-func (s *AdminService) FindBlockWithoutContentData(ctx context.Context, opts api.Opts) (*service.BlockResp, error) {
+func (s *AdminService) FindBlockWithoutContentData(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		BlockID: opts.BlockID,
 	}
@@ -105,7 +104,7 @@ func (s *AdminService) FindBlockWithoutContentData(ctx context.Context, opts api
 	return resp, nil
 }
 
-func (s *AdminService) FindBlockContentByIDAndOrTitleAndOrContentType(ctx context.Context, opts api.Opts) (*service.BlockResp, error) {
+func (s *AdminService) FindBlockContentByIDAndOrTitleAndOrContentType(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		BlockID:       opts.BlockID,
 		ContentID:     opts.ContentID,
@@ -159,7 +158,7 @@ func (s *AdminService) FindTemplateList(ctx context.Context) ([]service.Template
 
 }
 
-func (s *AdminService) FindTemplateByIDAndOrNameAndOrContentType(ctx context.Context, opts api.Opts) (*service.TemplateResp, error) {
+func (s *AdminService) FindTemplateByIDAndOrNameAndOrContentType(ctx context.Context, opts service.ApiOpts) (*service.TemplateResp, error) {
 	condition := &repositoryImpl.Condition{
 		TemplateID:            opts.TemplateID,
 		TemplateName:          opts.TemplateName,

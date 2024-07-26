@@ -3,11 +3,16 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/modylegi/service/pkg/rdclient"
 	"io"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/modylegi/service/internal/config"
+	"github.com/modylegi/service/pkg/rdclient"
+	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog"
 
 	"github.com/modylegi/service/internal/api/transport/http"
 	"github.com/modylegi/service/internal/service"
@@ -19,74 +24,92 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
-	cfg := getConfig()
+	cfg, err := config.Load()
+	if err != nil {
+		return fmt.Errorf("config load failed: %w", err)
+	}
 
 	log := logger.New(cfg.Env)
 
-	// postgres setup
+	db, err := setupDatabase(ctx, cfg)
+	if err != nil {
+		return fmt.Errorf("database setup failed: %w", err)
+	}
+	defer closeResource(db, "database", log)
+
+	var rd *redis.Client
+	if cfg.UseCache {
+		rd, err := setupRedis(ctx, cfg)
+		if err != nil {
+			return fmt.Errorf("redis setup failed: %w", err)
+		}
+		defer closeResource(rd, "redis", log)
+	}
+
+	server := setupServer(cfg, log, db, rd)
+
+	return runServer(ctx, server, log)
+}
+
+func setupDatabase(ctx context.Context, cfg *config.Config) (*sqlx.DB, error) {
 	pgCfg := pgconn.NewConfig().
-		WithDatabase(cfg.DBDatabase).
-		WithPassword(cfg.DBPassword).
-		WithUsername(cfg.DBUsername).
-		WithHost(cfg.DBHost).
-		WithPort(cfg.DBPort)
-	db, err := pgconn.NewConnection(ctx, pgCfg)
-	if err != nil {
-		return fmt.Errorf("failed to connect to database: %w", err)
-	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error closing database connection: %v\n", err)
-		}
-	}()
+		WithHost(cfg.DB.Host).
+		WithPort(cfg.DB.Port).
+		WithDatabase(cfg.DB.Database).
+		WithUsername(cfg.DB.Username).
+		WithPassword(cfg.DB.Password)
 
-	// redis setup
+	return pgconn.NewConnection(ctx, pgCfg)
+}
+
+func setupRedis(ctx context.Context, cfg *config.Config) (*redis.Client, error) {
 	rdCfg := rdclient.NewConfig().
-		WithHost(cfg.CacheHost).
-		WithPort(cfg.CachePort).
-		WithPassword(cfg.CachePassword)
-	rd, err := rdclient.NewClient(ctx, rdCfg)
-	if err != nil {
-		return fmt.Errorf("failed to connect to redis: %w", err)
-	}
-	defer func() {
-		if err := rd.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error closing redis client: %v\n", err)
-		}
-	}()
+		WithHost(cfg.Cache.Host).
+		WithPort(cfg.Cache.Port).
+		WithPassword(cfg.Cache.Password)
 
+	return rdclient.NewClient(ctx, rdCfg)
+}
+
+func setupServer(cfg *config.Config, log *zerolog.Logger, db *sqlx.DB, rd *redis.Client) *http.Server {
 	userSvc := service.NewUserService(db, rd)
 	adminSvc := service.NewAdminService(db)
 	validationSvc := service.NewValidationService(db)
 
-	server := http.NewServer(
-		cfg.ServerPort,
-		cfg.ServerIdleTimeout,
-		cfg.ServerReadTimeout,
-		cfg.ServerWriteTimeout,
-		cfg.Cache,
+	return http.NewServer(
+		cfg.HttpServer.Port,
+		cfg.HttpServer.IdleTimeout,
+		cfg.HttpServer.ReadTimeout,
+		cfg.HttpServer.WriteTimeout,
+		cfg.UseCache,
 		log,
 		userSvc,
 		adminSvc,
 		validationSvc,
 	)
+}
+
+func runServer(ctx context.Context, server *http.Server, log *zerolog.Logger) error {
 	log.Info().Msgf("Listening on %s", server.Addr)
 
-	ch := make(chan error, 1)
-
+	errCh := make(chan error, 1)
 	go func() {
-		if err := server.ListenAndServe(); err != nil {
-			ch <- fmt.Errorf("error listening and serving: %w", err)
-		}
-		close(ch)
+		errCh <- server.Start()
 	}()
 
 	select {
-	case err = <-ch:
-		return err
+	case err := <-errCh:
+		return fmt.Errorf("server error: %w", err)
 	case <-ctx.Done():
-		timeout, cancel := context.WithTimeout(context.Background(), time.Second*20)
+		log.Info().Msg("Shutdown signal received")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
-		return server.Shutdown(timeout)
+		return server.Shutdown(shutdownCtx)
+	}
+}
+
+func closeResource(closer io.Closer, resourceName string, log *zerolog.Logger) {
+	if err := closer.Close(); err != nil {
+		log.Error().Err(err).Msgf("Error closing %s connection", resourceName)
 	}
 }

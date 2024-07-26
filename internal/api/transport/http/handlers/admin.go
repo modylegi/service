@@ -28,15 +28,16 @@ func NewAdminHandler(
 }
 
 // BlockIDAndTitleList godoc
-// @Summary		Получение списка id и названий всех блоков.
-// @Description	Метод получения списка id и названий всех блоков.
-// @Tags			Admin
-// @Produce		json
-// @Success		200
-// @Success		204
-// @Failure		400
-// @Failure		500
-// @Router			/block/list [get]
+//
+//	@Summary		Получение списка id и названий всех блоков.
+//	@Description	Метод получения списка id и названий всех блоков.
+//	@Tags			Admin
+//	@Produce		json
+//	@Success		200
+//	@Success		204
+//	@Failure		400
+//	@Failure		500
+//	@Router			/block/list [get]
 func (h *AdminHandler) BlockIDAndTitleList(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	res, err := h.adminSvc.FindBlockIDAndTitleList(ctx)
@@ -52,17 +53,18 @@ func (h *AdminHandler) BlockIDAndTitleList(w http.ResponseWriter, r *http.Reques
 }
 
 // BlockByIDAndOrTitle godoc
-// @Summary		Получение блока контента по id и/или названию.
-// @Description	Метод получение блока контента по id и/или названию.
-// @Tags			Admin
-// @Produce		json
-// @Param			block_id	query	integer	false	"id блока"
-// @Param			name		query	string	false	"название блока"
-// @Success		200
-// @Success		204
-// @Failure		400
-// @Failure		500
-// @Router			/block [get]
+//
+//	@Summary		Получение блока контента по id и/или названию.
+//	@Description	Метод получение блока контента по id и/или названию.
+//	@Tags			Admin
+//	@Produce		json
+//	@Param			block_id	query	integer	false	"id блока"
+//	@Param			name		query	string	false	"название блока"
+//	@Success		200
+//	@Success		204
+//	@Failure		400
+//	@Failure		500
+//	@Router			/block [get]
 func (h *AdminHandler) BlockByIDAndOrTitle(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	params := r.URL.Query()
@@ -92,7 +94,7 @@ func (h *AdminHandler) BlockByIDAndOrTitle(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
-	var opts api.Opts
+	var opts service.ApiOpts
 	if blockIDInt != 0 {
 		opts.BlockID = blockIDInt
 	} else {
@@ -117,16 +119,17 @@ func (h *AdminHandler) BlockByIDAndOrTitle(w http.ResponseWriter, r *http.Reques
 }
 
 // BlockWithoutContentData godoc
-// @Summary		Получение списка id и названий элементов контента для блока.
-// @Description	Метод получения списка id и названий элементов контента для блока.
-// @Tags			Admin
-// @Produce		json
-// @Param			block_id	path	integer	true	"id блока"
-// @Success		200
-// @Success		204
-// @Failure		400
-// @Failure		500
-// @Router			/block/{block_id}/list [get]
+//
+//	@Summary		Получение списка id и названий элементов контента для блока.
+//	@Description	Метод получения списка id и названий элементов контента для блока.
+//	@Tags			Admin
+//	@Produce		json
+//	@Param			block_id	path	integer	true	"id блока"
+//	@Success		200
+//	@Success		204
+//	@Failure		400
+//	@Failure		500
+//	@Router			/block/{block_id}/list [get]
 func (h *AdminHandler) BlockWithoutContentData(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	blockIDString := r.PathValue("block_id")
@@ -142,7 +145,7 @@ func (h *AdminHandler) BlockWithoutContentData(w http.ResponseWriter, r *http.Re
 		return err
 	}
 
-	opts := api.Opts{
+	opts := service.ApiOpts{
 		BlockID: blockIDInt,
 	}
 
@@ -160,19 +163,20 @@ func (h *AdminHandler) BlockWithoutContentData(w http.ResponseWriter, r *http.Re
 }
 
 // Content godoc
-// @Summary		Получение элементов контента из блока по id, названию или типу контента.
-// @Description	Метод получения элемента контента из блока по id, названию или типу контента.
-// @Tags			Admin
-// @Produce		json
-// @Param			block_id		path	integer	true	"id блока"
-// @Param			content_id		query	integer	false	"id контента"
-// @Param			name			query	string	false	"название элемента контента"
-// @Param			content_type	query	integer	false	"тип контента (1 - баннер, 2 - истории, 3 - тесты)"
-// @Success		200
-// @Success		204
-// @Failure		400
-// @Failure		500
-// @Router			/block/{block_id} [get]
+//
+//	@Summary		Получение элементов контента из блока по id, названию или типу контента.
+//	@Description	Метод получения элемента контента из блока по id, названию или типу контента.
+//	@Tags			Admin
+//	@Produce		json
+//	@Param			block_id		path	integer	true	"id блока"
+//	@Param			content_id		query	integer	false	"id контента"
+//	@Param			name			query	string	false	"название элемента контента"
+//	@Param			content_type	query	integer	false	"тип контента (1 - баннер, 2 - истории, 3 - тесты)"
+//	@Success		200
+//	@Success		204
+//	@Failure		400
+//	@Failure		500
+//	@Router			/block/{block_id} [get]
 func (h *AdminHandler) Content(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	blockIDString := r.PathValue("block_id")
@@ -224,7 +228,7 @@ func (h *AdminHandler) Content(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	var opts api.Opts
+	var opts service.ApiOpts
 	opts.BlockID = blockIDInt
 	if contentIDInt != 0 {
 		opts.ContentID = contentIDInt
@@ -252,15 +256,16 @@ func (h *AdminHandler) Content(w http.ResponseWriter, r *http.Request) error {
 }
 
 // TemplateList godoc
-// @Summary		Получение списка id, названий и типов всех шаблонов.
-// @Description	Метод получения списка id, названий и типов всех шаблонов.
-// @Tags			Admin
-// @Produce		json
-// @Success		200
-// @Success		204
-// @Failure		400
-// @Failure		500
-// @Router			/template/list [get]
+//
+//	@Summary		Получение списка id, названий и типов всех шаблонов.
+//	@Description	Метод получения списка id, названий и типов всех шаблонов.
+//	@Tags			Admin
+//	@Produce		json
+//	@Success		200
+//	@Success		204
+//	@Failure		400
+//	@Failure		500
+//	@Router			/template/list [get]
 func (h *AdminHandler) TemplateList(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	res, err := h.adminSvc.FindTemplateList(ctx)
@@ -277,18 +282,19 @@ func (h *AdminHandler) TemplateList(w http.ResponseWriter, r *http.Request) erro
 }
 
 // TemplateByIDNameType godoc
-// @Summary		Получение шаблона по id, названию или типу.
-// @Description	Метод получения шаблона по id, названию или типу контента.
-// @Tags			Admin
-// @Produce		json
-// @Param			template_id		query	integer	false	"id шаблона"
-// @Param			name			query	string	false	"название шаблона"
-// @Param			content_type	query	integer	false	"тип шаблона (1 - баннер, 2 - истории, 3 - тесты)"
-// @Success		200
-// @Success		204
-// @Failure		400
-// @Failure		500
-// @Router			/template [get]
+//
+//	@Summary		Получение шаблона по id, названию или типу.
+//	@Description	Метод получения шаблона по id, названию или типу контента.
+//	@Tags			Admin
+//	@Produce		json
+//	@Param			template_id		query	integer	false	"id шаблона"
+//	@Param			name			query	string	false	"название шаблона"
+//	@Param			content_type	query	integer	false	"тип шаблона (1 - баннер, 2 - истории, 3 - тесты)"
+//	@Success		200
+//	@Success		204
+//	@Failure		400
+//	@Failure		500
+//	@Router			/template [get]
 func (h *AdminHandler) TemplateByIDNameType(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	params := r.URL.Query()
@@ -331,7 +337,7 @@ func (h *AdminHandler) TemplateByIDNameType(w http.ResponseWriter, r *http.Reque
 
 	}
 
-	var opts api.Opts
+	var opts service.ApiOpts
 	if templateIDInt != 0 {
 		opts.TemplateID = templateIDInt
 	} else {

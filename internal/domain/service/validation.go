@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-
-	"github.com/modylegi/service/internal/api"
 )
 
 type ValidationService interface {
@@ -16,5 +14,5 @@ type ValidationService interface {
 	TemplateID(context.Context, string) (int, error)
 	TemplateName(context.Context, string) (string, error)
 	LinkedScenarios(context.Context, int) error
-	LinkedScenarioBlock(context.Context, api.Opts) error
+	LinkedScenarioBlock(context.Context, ApiOpts) error
 }

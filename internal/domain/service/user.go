@@ -2,15 +2,13 @@ package service
 
 import (
 	"context"
-
-	"github.com/modylegi/service/internal/api"
 )
 
 type UserService interface {
-	FindBlockList(context.Context, api.Opts) ([]BlockResp, error)
-	FindBlockListWithCache(context.Context, api.Opts) ([]BlockResp, error)
-	FindBlockIDAndTitleList(context.Context, api.Opts) ([]BlockResp, error)
-	FindBlockByIDAndOrTitle(context.Context, api.Opts) (*BlockResp, error)
-	FindBlockBWithoutContentData(context.Context, api.Opts) (*BlockResp, error)
-	FindBlockContentByIDAndOrTitleAndOrContentType(context.Context, api.Opts) (*BlockResp, error)
+	FindBlockList(context.Context, ApiOpts) ([]BlockResp, error)
+	FindBlockListWithCache(context.Context, ApiOpts) ([]BlockResp, error)
+	FindBlockIDAndTitleList(context.Context, ApiOpts) ([]BlockResp, error)
+	FindBlockByIDAndOrTitle(context.Context, ApiOpts) (*BlockResp, error)
+	FindBlockBWithoutContentData(context.Context, ApiOpts) (*BlockResp, error)
+	FindBlockContentByIDAndOrTitleAndOrContentType(context.Context, ApiOpts) (*BlockResp, error)
 }
