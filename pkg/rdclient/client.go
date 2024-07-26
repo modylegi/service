@@ -15,7 +15,7 @@ var (
 
 func NewClient(ctx context.Context, cfg *Config) (*redis.Client, error) {
 	var count int
-	connStr := fmt.Sprintf("redis://%s:%s@%s:%s/%s", cfg.username, cfg.password, cfg.host, cfg.port, cfg.database)
+	connStr := fmt.Sprintf("redis://%s:%s@%s:%d/%s", cfg.username, cfg.password, cfg.host, cfg.port, cfg.database)
 	opt, err := redis.ParseURL(connStr)
 	if err != nil {
 		return nil, err

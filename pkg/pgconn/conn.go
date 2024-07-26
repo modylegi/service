@@ -16,7 +16,7 @@ var (
 
 func NewConnection(ctx context.Context, cfg *Config) (*sqlx.DB, error) {
 	var count int
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cfg.username, cfg.password, cfg.host, cfg.port, cfg.database)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", cfg.username, cfg.password, cfg.host, cfg.port, cfg.database)
 	db, err := sqlx.Open("pgx", connStr)
 	if err != nil {
 		return nil, err

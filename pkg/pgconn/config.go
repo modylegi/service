@@ -2,7 +2,7 @@ package pgconn
 
 type Config struct {
 	host     string
-	port     string
+	port     int
 	database string
 	username string
 	password string
@@ -11,7 +11,7 @@ type Config struct {
 func NewConfig() *Config {
 	return &Config{
 		host:     "localhost",
-		port:     "5432",
+		port:     5432,
 		database: "database",
 		username: "postgres",
 		password: "password",
@@ -23,7 +23,7 @@ func (c *Config) WithHost(host string) *Config {
 	return c
 }
 
-func (c *Config) WithPort(port string) *Config {
+func (c *Config) WithPort(port int) *Config {
 	c.port = port
 	return c
 }
