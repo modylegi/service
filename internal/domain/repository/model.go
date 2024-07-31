@@ -5,6 +5,14 @@ import (
 	"time"
 )
 
+type User struct {
+	UserID        int       `db:"user_id"`
+	Username      string    `db:"user_name"`
+	UserPassword  string    `db:"user_password"`
+	UserCreatedAt time.Time `db:"user_created_at"`
+	UserDeleted   bool      `db:"user_deleted"`
+}
+
 type Block struct {
 	BlockID              int            `db:"block_id"`
 	BlockKey             string         `db:"block_key"`

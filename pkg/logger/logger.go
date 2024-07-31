@@ -15,9 +15,10 @@ const (
 )
 
 func New(env string) *zerolog.Logger {
-	buildInfo, _ := debug.ReadBuildInfo()
-	var output io.Writer
-	var logLevel zerolog.Level
+	var (
+		output   io.Writer
+		logLevel zerolog.Level
+	)
 
 	switch env {
 	case envLocal:
@@ -26,9 +27,6 @@ func New(env string) *zerolog.Logger {
 			TimeFormat: time.RFC3339Nano,
 		}
 		logLevel = zerolog.DebugLevel
-	case envProd:
-		output = os.Stdout
-		logLevel = zerolog.InfoLevel
 	default:
 		output = os.Stdout
 		logLevel = zerolog.InfoLevel
@@ -41,9 +39,11 @@ func New(env string) *zerolog.Logger {
 		Caller()
 
 	if env == envProd {
-		logger = logger.
-			Int("pid", os.Getpid()).
-			Str("go_version", buildInfo.GoVersion)
+		if buildInfo, ok := debug.ReadBuildInfo(); ok {
+			logger = logger.
+				Int("pid", os.Getpid()).
+				Str("go_version", buildInfo.GoVersion)
+		}
 	}
 
 	log := logger.Logger()

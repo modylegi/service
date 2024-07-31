@@ -172,7 +172,7 @@ func (s *ValidationService) LinkedScenarios(ctx context.Context, userID int) err
 	return nil
 }
 
-func (s *ValidationService) LinkedScenarioBlock(ctx context.Context, opts service.ApiOpts) error {
+func (s *ValidationService) LinkedScenarioBlock(ctx context.Context, opts *service.ApiOpts) error {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 	}

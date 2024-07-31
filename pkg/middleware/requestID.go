@@ -2,27 +2,42 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
+	"sync/atomic"
 )
+
+type ctxKeyRequestID int
 
 const (
-	requestIDKey    = "requestID"
-	requestIDHeader = "X-Request-ID"
+	requestIDHeader                 = "X-Request-ID"
+	requestIDKey    ctxKeyRequestID = 0
 )
 
-func (m *Middleware) RequestID(next http.Handler) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			ctx := r.Context()
-			requestID := r.Header.Get(requestIDHeader)
-			if requestID == "" {
-				requestID = uuid.New().String()
-			}
-			w.Header().Set(requestIDHeader, requestID)
-			ctx = context.WithValue(ctx, requestIDKey, requestID)
-			r = r.WithContext(ctx)
-			next.ServeHTTP(w, r)
-		})
+var (
+	reqID uint64
+)
+
+func RequestID(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		requestID := r.Header.Get(requestIDHeader)
+		if requestID == "" {
+			id := atomic.AddUint64(&reqID, 1)
+			requestID = fmt.Sprintf("%d", id)
+		}
+		ctx = context.WithValue(ctx, requestIDKey, requestID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+	return http.HandlerFunc(fn)
+}
+
+func GetReqID(ctx context.Context) string {
+	if ctx == nil {
+		return ""
+	}
+	if reqID, ok := ctx.Value(requestIDKey).(string); ok {
+		return reqID
+	}
+	return ""
 }

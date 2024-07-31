@@ -1,4 +1,4 @@
-package handlers
+package handler
 
 import (
 	"net/http"
@@ -28,7 +28,6 @@ func NewAdminHandler(
 }
 
 // BlockIDAndTitleList godoc
-//
 //	@Summary		Получение списка id и названий всех блоков.
 //	@Description	Метод получения списка id и названий всех блоков.
 //	@Tags			Admin
@@ -38,6 +37,7 @@ func NewAdminHandler(
 //	@Failure		400
 //	@Failure		500
 //	@Router			/block/list [get]
+//	@Security		BearerAuth
 func (h *AdminHandler) BlockIDAndTitleList(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	res, err := h.adminSvc.FindBlockIDAndTitleList(ctx)
@@ -53,7 +53,6 @@ func (h *AdminHandler) BlockIDAndTitleList(w http.ResponseWriter, r *http.Reques
 }
 
 // BlockByIDAndOrTitle godoc
-//
 //	@Summary		Получение блока контента по id и/или названию.
 //	@Description	Метод получение блока контента по id и/или названию.
 //	@Tags			Admin
@@ -65,6 +64,7 @@ func (h *AdminHandler) BlockIDAndTitleList(w http.ResponseWriter, r *http.Reques
 //	@Failure		400
 //	@Failure		500
 //	@Router			/block [get]
+//	@Security		BearerAuth
 func (h *AdminHandler) BlockByIDAndOrTitle(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	params := r.URL.Query()
@@ -119,7 +119,6 @@ func (h *AdminHandler) BlockByIDAndOrTitle(w http.ResponseWriter, r *http.Reques
 }
 
 // BlockWithoutContentData godoc
-//
 //	@Summary		Получение списка id и названий элементов контента для блока.
 //	@Description	Метод получения списка id и названий элементов контента для блока.
 //	@Tags			Admin
@@ -130,6 +129,7 @@ func (h *AdminHandler) BlockByIDAndOrTitle(w http.ResponseWriter, r *http.Reques
 //	@Failure		400
 //	@Failure		500
 //	@Router			/block/{block_id}/list [get]
+//	@Security		BearerAuth
 func (h *AdminHandler) BlockWithoutContentData(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	blockIDString := r.PathValue("block_id")
@@ -163,7 +163,6 @@ func (h *AdminHandler) BlockWithoutContentData(w http.ResponseWriter, r *http.Re
 }
 
 // Content godoc
-//
 //	@Summary		Получение элементов контента из блока по id, названию или типу контента.
 //	@Description	Метод получения элемента контента из блока по id, названию или типу контента.
 //	@Tags			Admin
@@ -177,6 +176,7 @@ func (h *AdminHandler) BlockWithoutContentData(w http.ResponseWriter, r *http.Re
 //	@Failure		400
 //	@Failure		500
 //	@Router			/block/{block_id} [get]
+//	@Security		BearerAuth
 func (h *AdminHandler) Content(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	blockIDString := r.PathValue("block_id")
@@ -256,7 +256,6 @@ func (h *AdminHandler) Content(w http.ResponseWriter, r *http.Request) error {
 }
 
 // TemplateList godoc
-//
 //	@Summary		Получение списка id, названий и типов всех шаблонов.
 //	@Description	Метод получения списка id, названий и типов всех шаблонов.
 //	@Tags			Admin
@@ -266,6 +265,7 @@ func (h *AdminHandler) Content(w http.ResponseWriter, r *http.Request) error {
 //	@Failure		400
 //	@Failure		500
 //	@Router			/template/list [get]
+//	@Security		BearerAuth
 func (h *AdminHandler) TemplateList(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	res, err := h.adminSvc.FindTemplateList(ctx)
@@ -282,7 +282,6 @@ func (h *AdminHandler) TemplateList(w http.ResponseWriter, r *http.Request) erro
 }
 
 // TemplateByIDNameType godoc
-//
 //	@Summary		Получение шаблона по id, названию или типу.
 //	@Description	Метод получения шаблона по id, названию или типу контента.
 //	@Tags			Admin
@@ -295,6 +294,7 @@ func (h *AdminHandler) TemplateList(w http.ResponseWriter, r *http.Request) erro
 //	@Failure		400
 //	@Failure		500
 //	@Router			/template [get]
+//	@Security		BearerAuth
 func (h *AdminHandler) TemplateByIDNameType(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	params := r.URL.Query()

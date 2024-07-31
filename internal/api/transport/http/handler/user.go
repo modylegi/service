@@ -1,11 +1,12 @@
-package handlers
+package handler
 
 import (
+	"net/http"
+
 	"github.com/modylegi/service/internal/api"
 	"github.com/modylegi/service/internal/domain/service"
 	"github.com/modylegi/service/pkg/encoding"
 	"github.com/rs/zerolog"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -41,10 +42,10 @@ func NewUserHandler(
 //	@Failure		400
 //	@Failure		500
 //	@Router			/scenario/{user_id} [get]
+//	@Security		BearerAuth
 func (h *UserHandler) AllBlocksHandler(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	userIDString := r.PathValue("user_id")
-
 	// Параметр user_id не указан
 	if userIDString == "" {
 		return api.NewError(http.StatusBadRequest, api.ErrNoUserID)
@@ -65,9 +66,9 @@ func (h *UserHandler) AllBlocksHandler(w http.ResponseWriter, r *http.Request) e
 
 	var res []service.BlockResp
 	if h.cache {
-		res, err = h.userSvc.FindBlockListWithCache(ctx, opts)
+		res, err = h.userSvc.FindBlockListWithCache(ctx, &opts)
 	} else {
-		res, err = h.userSvc.FindBlockList(ctx, opts)
+		res, err = h.userSvc.FindBlockList(ctx, &opts)
 	}
 	if err != nil {
 		return err
@@ -93,6 +94,7 @@ func (h *UserHandler) AllBlocksHandler(w http.ResponseWriter, r *http.Request) e
 //	@Failure		400
 //	@Failure		500
 //	@Router			/scenario/list/{user_id} [get]
+//	@Security		BearerAuth
 func (h *UserHandler) AllBlocksHandlerIDAndTitle(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	userIDString := r.PathValue("user_id")
@@ -115,7 +117,7 @@ func (h *UserHandler) AllBlocksHandlerIDAndTitle(w http.ResponseWriter, r *http.
 		return err
 	}
 
-	res, err := h.userSvc.FindBlockIDAndTitleList(ctx, opts)
+	res, err := h.userSvc.FindBlockIDAndTitleList(ctx, &opts)
 	if err != nil {
 		return err
 	}
@@ -141,6 +143,7 @@ func (h *UserHandler) AllBlocksHandlerIDAndTitle(w http.ResponseWriter, r *http.
 //	@Failure		400
 //	@Failure		500
 //	@Router			/scenario/blocks/{user_id} [get]
+//	@Security		BearerAuth
 func (h *UserHandler) BlockByIDAndOrTitleParam(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	userIDString := r.PathValue("user_id")
@@ -192,18 +195,18 @@ func (h *UserHandler) BlockByIDAndOrTitleParam(w http.ResponseWriter, r *http.Re
 	if blockIDInt != 0 {
 		opts.BlockID = blockIDInt
 		// Указан параметр  block_id, который не соответствует сценарию пользователя
-		if err := h.validationSvc.LinkedScenarioBlock(ctx, opts); err != nil {
+		if err := h.validationSvc.LinkedScenarioBlock(ctx, &opts); err != nil {
 			return err
 		}
 	} else {
 		opts.BlockTitle = blockTitleString
 		// Указан параметр  name, который не соответствует сценарию пользователя
-		if err := h.validationSvc.LinkedScenarioBlock(ctx, opts); err != nil {
+		if err := h.validationSvc.LinkedScenarioBlock(ctx, &opts); err != nil {
 			return err
 		}
 	}
 
-	res, err := h.userSvc.FindBlockByIDAndOrTitle(ctx, opts)
+	res, err := h.userSvc.FindBlockByIDAndOrTitle(ctx, &opts)
 	if err != nil {
 		return err
 	}
@@ -232,6 +235,7 @@ func (h *UserHandler) BlockByIDAndOrTitleParam(w http.ResponseWriter, r *http.Re
 //	@Failure		400
 //	@Failure		500
 //	@Router			/scenario/block/{user_id}/list/{block_id} [get]
+//	@Security		BearerAuth
 func (h *UserHandler) BlockByID(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	userIDString := r.PathValue("user_id")
@@ -271,11 +275,11 @@ func (h *UserHandler) BlockByID(w http.ResponseWriter, r *http.Request) error {
 	opts.BlockID = blockIDInt
 
 	// Указан параметр  block_id, который не соответствует сценарию пользователя
-	if err := h.validationSvc.LinkedScenarioBlock(ctx, opts); err != nil {
+	if err := h.validationSvc.LinkedScenarioBlock(ctx, &opts); err != nil {
 		return err
 	}
 
-	res, err := h.userSvc.FindBlockBWithoutContentData(ctx, opts)
+	res, err := h.userSvc.FindBlockBWithoutContentData(ctx, &opts)
 	if err != nil {
 		return err
 	}
@@ -304,6 +308,7 @@ func (h *UserHandler) BlockByID(w http.ResponseWriter, r *http.Request) error {
 //	@Failure		400
 //	@Failure		500
 //	@Router			/scenario/block/{user_id}/{block_id} [get]
+//	@Security		BearerAuth
 func (h *UserHandler) Content(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	userIDString := r.PathValue("user_id")
@@ -373,7 +378,7 @@ func (h *UserHandler) Content(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Указан параметр  block_id, который не соответствует сценарию пользователя
-	if err := h.validationSvc.LinkedScenarioBlock(ctx, opts); err != nil {
+	if err := h.validationSvc.LinkedScenarioBlock(ctx, &opts); err != nil {
 		return err
 	}
 
@@ -384,7 +389,7 @@ func (h *UserHandler) Content(w http.ResponseWriter, r *http.Request) error {
 		opts.ContentTypeID = contentTypeInt
 	}
 
-	res, err := h.userSvc.FindBlockContentByIDAndOrTitleAndOrContentType(ctx, opts)
+	res, err := h.userSvc.FindBlockContentByIDAndOrTitleAndOrContentType(ctx, &opts)
 	if err != nil {
 		return err
 	}

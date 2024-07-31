@@ -1,5 +1,5 @@
 -- +goose Up
-INSERT INTO users (user_id) VALUES
+INSERT INTO users (username) VALUES
     ('user001'),
     ('user002'),
     ('user003'),

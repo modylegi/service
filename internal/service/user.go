@@ -6,12 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/modylegi/service/internal/domain/repository"
 	"github.com/modylegi/service/internal/domain/service"
 	repositoryImpl "github.com/modylegi/service/internal/repository"
 	"github.com/redis/go-redis/v9"
-	"time"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
@@ -34,7 +36,43 @@ func NewUserService(db *sqlx.DB, rd *redis.Client) *UserService {
 	}
 }
 
-func (s *UserService) FindBlockList(ctx context.Context, opts service.ApiOpts) ([]service.BlockResp, error) {
+func (s *UserService) Create(ctx context.Context, req *service.RegisterReq) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user := &repository.User{
+		Username:     req.Username,
+		UserPassword: string(hashedPassword),
+	}
+
+	return s.userRepo.Create(ctx, user)
+}
+
+func (s *UserService) Authenticate(ctx context.Context, req *service.LoginReq) error {
+	user, err := s.userRepo.GetByUsername(ctx, req.Username)
+	if err != nil {
+		return err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.UserPassword), []byte(req.Password)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) Find(ctx context.Context, req *service.RegisterReq) error {
+	_, err := s.userRepo.GetByUsername(ctx, req.Username)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (s *UserService) FindBlockList(ctx context.Context, opts *service.ApiOpts) ([]service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 	}
@@ -75,7 +113,7 @@ func (s *UserService) FindBlockList(ctx context.Context, opts service.ApiOpts) (
 	return resp, nil
 }
 
-func (s *UserService) FindBlockListWithCache(ctx context.Context, opts service.ApiOpts) ([]service.BlockResp, error) {
+func (s *UserService) FindBlockListWithCache(ctx context.Context, opts *service.ApiOpts) ([]service.BlockResp, error) {
 	var resp []service.BlockResp
 	key := fmt.Sprintf("blockListUser:%d", opts.UserID)
 
@@ -104,7 +142,7 @@ func (s *UserService) FindBlockListWithCache(ctx context.Context, opts service.A
 	return resp, nil
 }
 
-func (s *UserService) FindBlockIDAndTitleList(ctx context.Context, opts service.ApiOpts) ([]service.BlockResp, error) {
+func (s *UserService) FindBlockIDAndTitleList(ctx context.Context, opts *service.ApiOpts) ([]service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 	}
@@ -128,7 +166,7 @@ func (s *UserService) FindBlockIDAndTitleList(ctx context.Context, opts service.
 
 }
 
-func (s *UserService) FindBlockByIDAndOrTitle(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
+func (s *UserService) FindBlockByIDAndOrTitle(ctx context.Context, opts *service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 		BlockID:        opts.BlockID,
@@ -161,7 +199,7 @@ func (s *UserService) FindBlockByIDAndOrTitle(ctx context.Context, opts service.
 	return resp, nil
 }
 
-func (s *UserService) FindBlockBWithoutContentData(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
+func (s *UserService) FindBlockBWithoutContentData(ctx context.Context, opts *service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 		BlockID:        opts.BlockID,
@@ -193,7 +231,7 @@ func (s *UserService) FindBlockBWithoutContentData(ctx context.Context, opts ser
 
 }
 
-func (s *UserService) FindBlockContentByIDAndOrTitleAndOrContentType(ctx context.Context, opts service.ApiOpts) (*service.BlockResp, error) {
+func (s *UserService) FindBlockContentByIDAndOrTitleAndOrContentType(ctx context.Context, opts *service.ApiOpts) (*service.BlockResp, error) {
 	condition := &repositoryImpl.Condition{
 		ScenarioUserID: opts.UserID,
 		BlockID:        opts.BlockID,

@@ -1,3 +1,25 @@
+definitions:
+  service.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  service.LoginResp:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  service.RegisterReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
 info:
   contact: {}
   description: Контент сервис - сервис хранения контента (баннеры, тесты, истории
@@ -5,6 +27,85 @@ info:
   title: Content Service API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns tokens
+      parameters:
+      - description: User login request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/service.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.LoginResp'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Login a user
+      tags:
+      - Authentication
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refreshes the access token using the refresh token
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Refresh access token
+      tags:
+      - Authentication
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user in the system
+      parameters:
+      - description: User registration request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/service.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Register a new user
+      tags:
+      - Authentication
   /block:
     get:
       description: Метод получение блока контента по id и/или названию.
@@ -28,6 +129,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение блока контента по id и/или названию.
       tags:
       - Admin
@@ -64,6 +167,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение элементов контента из блока по id, названию или типу контента.
       tags:
       - Admin
@@ -87,6 +192,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение списка id и названий элементов контента для блока.
       tags:
       - Admin
@@ -104,22 +211,11 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение списка id и названий всех блоков.
       tags:
       - Admin
-  /health:
-    get:
-      description: Health check.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "500":
-          description: Internal Server Error
-      summary: Health check.
-      tags:
-      - Health
   /scenario/{user_id}:
     get:
       description: Метод получение всего контента, который доступен пользователю по
@@ -141,6 +237,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение всего контента по сценарию пользователя.
       tags:
       - User
@@ -182,6 +280,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение элемента контента из блока по id, названию или типу контента.
       tags:
       - User
@@ -210,6 +310,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение списка id и названий элементов контента для блока.
       tags:
       - User
@@ -241,6 +343,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение блока контента по id и/или названию для пользователя.
       tags:
       - User
@@ -265,6 +369,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение списка id и названий блоков, доступных пользователю по сценарию.
       tags:
       - User
@@ -295,6 +401,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение шаблона по id, названию или типу.
       tags:
       - Admin
@@ -312,7 +420,14 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Получение списка id, названий и типов всех шаблонов.
       tags:
       - Admin
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

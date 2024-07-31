@@ -35,3 +35,18 @@ type ApiOpts struct {
 	TemplateName          string
 	TemplateContentTypeID int
 }
+
+type LoginReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResp struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+type RegisterReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/modylegi/service/pkg/auth"
 	"io"
 	"os"
 	"os/signal"
@@ -75,6 +76,7 @@ func setupServer(cfg *config.Config, log *zerolog.Logger, db *sqlx.DB, rd *redis
 	userSvc := service.NewUserService(db, rd)
 	adminSvc := service.NewAdminService(db)
 	validationSvc := service.NewValidationService(db)
+	jwtSvc := auth.NewJwtService("", time.Minute*15, time.Hour*24*7)
 
 	return http.NewServer(
 		cfg.HttpServer.Port,
@@ -86,6 +88,7 @@ func setupServer(cfg *config.Config, log *zerolog.Logger, db *sqlx.DB, rd *redis
 		userSvc,
 		adminSvc,
 		validationSvc,
+		jwtSvc,
 	)
 }
 

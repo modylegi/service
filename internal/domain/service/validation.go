@@ -14,5 +14,5 @@ type ValidationService interface {
 	TemplateID(context.Context, string) (int, error)
 	TemplateName(context.Context, string) (string, error)
 	LinkedScenarios(context.Context, int) error
-	LinkedScenarioBlock(context.Context, ApiOpts) error
+	LinkedScenarioBlock(context.Context, *ApiOpts) error
 }

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -40,20 +39,23 @@ type Cache struct {
 }
 
 func Load() (*Config, error) {
-	configPath := fetchConfigPath()
-	if configPath == "" {
-		return nil, errors.New("config path is empty")
-	}
+	// configPath := fetchConfigPath()
+	// if configPath == "" {
+	// 	return nil, errors.New("config path is empty")
+	// }
 
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("config file does not exist: %w", err)
-	}
+	// if _, err := os.Stat(configPath); os.IsNotExist(err) {
+	// 	return nil, fmt.Errorf("config file does not exist: %w", err)
+	// }
 
 	var cfg Config
 
-	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		return nil, fmt.Errorf("cannot read config: %w", err)
 	}
+	// if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
+	// 	return nil, fmt.Errorf("cannot read config: %w", err)
+	// }
 	return &cfg, nil
 }
 

@@ -15,6 +15,17 @@ var (
 	ErrNoBlockIDAndTitle                = errors.New("не указан ни один из параметров block_id, name")
 	ErrNoContentIDAndNameAndType        = errors.New("не указан ни один из параметров content_id, name, content_type")
 	ErrNoTemplateIDAndNameAndType       = errors.New("не указан ни один из параметров template_id, name, content_type")
+	ErrInvalidData                      = errors.New("invalid data")
+	ErrUnauthorized                     = errors.New("unauthorized")
+	ErrInvalidCredentials               = errors.New("invalid credentials")
+	ErrInvalidToken                     = errors.New("invalid token")
+	ErrTokenExpired                     = errors.New("token has expired")
+	ErrAccessTokenNotAllowed            = errors.New("access token not allowed for refresh")
+	ErrUserAlreadyExists                = errors.New("user already exists ")
+	ErrServer                           = errors.New("server error")
+	ErrRateLimitExceeded                = errors.New("rate limit exceeded")
+	ErrWeakPassword                     = errors.New("password too weak")
+	ErrTokenRevoked                     = errors.New("token has been revoked")
 )
 
 type Error struct {

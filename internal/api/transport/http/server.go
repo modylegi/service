@@ -5,14 +5,15 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/modylegi/service/pkg/auth"
+
 	"github.com/modylegi/service/internal/domain/service"
-	"github.com/modylegi/service/pkg/middleware"
 	"github.com/rs/zerolog"
 )
 
 type Server struct {
 	*http.Server
-	middlewares []func(http.Handler) http.Handler
 }
 
 func NewServer(
@@ -23,11 +24,12 @@ func NewServer(
 	userSvc service.UserService,
 	adminSvc service.AdminService,
 	validationSvc service.ValidationService,
+	jwtSvc *auth.JwtService,
 ) *Server {
-	mux := http.NewServeMux()
-	registerRoutes(cache, log, mux, userSvc, adminSvc, validationSvc)
+	mux := chi.NewMux()
+	registerRoutes(cache, log, mux, userSvc, adminSvc, validationSvc, jwtSvc)
 
-	server := &Server{
+	return &Server{
 		Server: &http.Server{
 			Addr:         fmt.Sprintf(":%d", port),
 			Handler:      mux,
@@ -36,24 +38,10 @@ func NewServer(
 			WriteTimeout: writeTimeout,
 		},
 	}
-
-	mw := middleware.New(log)
-	server.Use(mw.Logger)
-	server.Use(mw.RequestID)
-
-	return server
-}
-
-func (s *Server) Use(middleware func(http.Handler) http.Handler) {
-	s.middlewares = append(s.middlewares, middleware)
 }
 
 func (s *Server) Start() error {
 	var handler http.Handler = s.Handler
-	for i := len(s.middlewares) - 1; i >= 0; i-- {
-		handler = s.middlewares[i](handler)
-	}
 	s.Handler = handler
-
 	return s.ListenAndServe()
 }
